@@ -94,8 +94,20 @@ class CSSRewrite(CSSUrlRewriter):
             if not parsed.scheme and not parsed.path.startswith('/'):
                 abs_source_url = urlparse.urljoin(self.source_url, url)
 
-                # relpath() will not detect this case
-                if urlparse.urlparse(abs_source_url).scheme:
+                parsed_source_url = urlparse.urlparse(abs_source_url)
+                parsed_output_url = urlparse.urlparse(self.output_url)
+
+                # relpath() will not detect this case, where we have a full
+                # url but not a full output_url
+                if parsed_source_url.scheme and not parsed_output_url.scheme:
+                    return abs_source_url
+
+                # relpath() will not detect these neither, when we have two
+                # full urls, but on different hosts or different schemes
+                # (http vs https for example)
+                if parsed_source_url.hostname != parsed_output_url.hostname:
+                    return abs_source_url
+                if parsed_source_url.scheme != parsed_output_url.scheme:
                     return abs_source_url
 
                 # rewritten url: relative path from new location (output)
