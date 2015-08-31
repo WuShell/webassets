@@ -103,9 +103,9 @@ class CSSRewrite(CSSUrlRewriter):
                     return abs_source_url
 
                 # relpath() will not detect these neither, when we have two
-                # full urls, but on different hosts or different schemes
+                # full urls, but on different hosts:ports or different schemes
                 # (http vs https for example)
-                if parsed_source_url.hostname != parsed_output_url.hostname:
+                if parsed_source_url.netloc != parsed_output_url.netloc:
                     return abs_source_url
                 if parsed_source_url.scheme != parsed_output_url.scheme:
                     return abs_source_url
